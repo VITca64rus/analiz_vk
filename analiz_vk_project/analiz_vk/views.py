@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from django.http import HttpResponseRedirect
 import requests
+import os
 
 # Create your views here.
 def auth(request):
@@ -9,7 +10,9 @@ def auth(request):
     if code == "null":
         return HttpResponseRedirect ("https://oauth.vk.com/authorize?client_id=8030169&display=page&redirect_uri=http://127.0.0.1:8000/auth&scope=friends,groups,offline,wall&response_type=code&v=5.131")
     else:
-        payload = {'client_id': 8030169, 'client_secret': "5nm9ZnkUNtEKOoukDh9q", 'redirect_uri': "http://127.0.0.1:8000/auth", 'code': code}
+        cl_s = str(os.getenv('CLIENT_SECRET'))
+        print (cl_s)
+        payload = {'client_id': 8030169, 'client_secret': cl_s, 'redirect_uri': "http://127.0.0.1:8000/auth", 'code': code}
         r = requests.get ("https://oauth.vk.com/access_token", params=payload)
         request.session['token_vk'] = r.json()['access_token']
         return HttpResponse("Авторизация успешна")
